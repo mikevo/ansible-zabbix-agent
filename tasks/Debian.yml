@@ -56,7 +56,7 @@
     http_proxy: "{{ zabbix_http_proxy | default(None) | default(omit) }}"
     https_proxy: "{{ zabbix_https_proxy | default(None) | default(omit) }}"
   when:
-    - ansible_distribution == "Debian"
+    - ansible_distribution == "Debian" and ansible_lsb.id != "Raspbian"
     - zabbix_repo == "zabbix"
   become: yes
   tags:
@@ -71,7 +71,37 @@
     http_proxy: "{{ zabbix_http_proxy | default(None) | default(omit) }}"
     https_proxy: "{{ zabbix_https_proxy | default(None) | default(omit) }}"
   when:
-    - ansible_distribution == "Debian"
+    - ansible_distribution == "Debian" and ansible_lsb.id != "Raspbian"
+    - zabbix_repo == "zabbix"
+  become: yes
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Debian | Installing deb-src repository Raspbian"
+  apt_repository:
+    repo: "deb-src http://repo.zabbix.com/zabbix/{{ zabbix_version }}/raspbian/ {{ zabbix_agent_distribution_release }} main"
+    state: present
+  environment:
+    http_proxy: "{{ zabbix_http_proxy | default(None) | default(omit) }}"
+    https_proxy: "{{ zabbix_https_proxy | default(None) | default(omit) }}"
+  when:
+    - ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian"
+    - zabbix_repo == "zabbix"
+  become: yes
+  tags:
+    - zabbix-agent
+    - init
+
+- name: "Debian | Installing deb repository Raspbian"
+  apt_repository:
+    repo: "deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/raspbian/ {{ zabbix_agent_distribution_release }} main"
+    state: present
+  environment:
+    http_proxy: "{{ zabbix_http_proxy | default(None) | default(omit) }}"
+    https_proxy: "{{ zabbix_https_proxy | default(None) | default(omit) }}"
+  when:
+    - ansible_distribution == "Debian" and ansible_lsb.id == "Raspbian"
     - zabbix_repo == "zabbix"
   become: yes
   tags:
